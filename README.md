@@ -29,18 +29,53 @@ The pipeline is intended for research-grade model development and reproducible b
 ```text
 .
 ├── CNN_1D_pytorch.py        # Main training, optimization, and evaluation script
-├── tags_config_CNN_1D.py    # MLflow tag configuration
+├── tags_config_CNN_1D.py    # Required MLflow tag configuration (mandatory)
 └── README.md                # This file
 ```
 
 ---
 
+## Required configuration
+
+The script requires the presence of the file `tags_config_CNN_1D.py` in the same directory.
+
+This file defines MLflow tag dictionaries used during different stages of the workflow
+(hyperparameter optimization, evaluation, and final training).
+The script imports this file unconditionally; therefore, it must be present for successful execution.
+
+An example structure of the file is shown below:
+
+```python
+mlflow_tags1 = {
+    "architecture": "Pytorch",
+    "model": "CNN",
+    "stage": "Optuna HP"
+}
+
+mlflow_tags2 = {
+    "architecture": "Pytorch",
+    "model": "CNN",
+    "stage": "evaluation"
+}
+
+mlflow_tags3 = {
+    "architecture": "Pytorch",
+    "model": "CNN",
+    "stage": "training"
+}
+```
+
+The exact tag content may be adapted to local experiment-tracking conventions,
+but the file itself is mandatory.
+
+---
+
 ## Input data format
 
-The script expects input data in **CSV format**, where:
+The script expects input data in CSV format, where:
 
-- the **first column** is a sample identifier (ignored during training)
-- one column named **LABEL** contains the regression target
+- the first column is a sample identifier (ignored during training)
+- one column named `LABEL` contains the regression target
 - all remaining columns are numerical descriptors (floats or integers)
 
 Example structure:
@@ -51,7 +86,8 @@ mol_001,0.12,1.0,0.0,...,0.45
 mol_002,0.08,0.0,1.0,...,0.62
 ```
 
-Missing values are handled deterministically using **median imputation**, fitted exclusively on training data to prevent information leakage.
+Missing values are handled deterministically using median imputation,
+fitted exclusively on training data to prevent information leakage.
 
 ---
 
@@ -84,9 +120,9 @@ For each dataset, the pipeline produces:
 - cross-validation and test-set metrics
 - prediction CSV files
 - Optuna parameter importance plots
-- Williams plots (latent space)
+- Williams plots in latent feature space
 - applicability domain diagnostics (Mahalanobis distance)
-- full MLflow experiment logs and artifacts
+- complete MLflow experiment logs and artifacts
 
 ---
 
@@ -99,7 +135,8 @@ Reproducibility is enforced through:
 - persisted train/test split indices  
 - explicit logging of all hyperparameters and model states  
 
-Given identical input data and software versions, the pipeline yields identical results.
+Given identical input data and software versions,
+the pipeline yields identical results.
 
 ---
 
@@ -134,7 +171,7 @@ It is not designed as a production inference service or end-user application.
 
 If you use this code in academic work, please cite the associated publication:
 
-From NMR to AI: [reference to be added upon publication]
+From NMR to AI: reference to be added upon publication
 
 ---
 
